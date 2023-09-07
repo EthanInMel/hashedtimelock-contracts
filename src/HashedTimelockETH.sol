@@ -6,11 +6,11 @@ import "./interfaces/IHashedTimelockETH.sol";
 contract HashedTimelockETH is IHashedTimelockETH {
     struct Lock {
         bytes32 hashedSecret;
+        State state;
         address sender;
         address recipient;
         uint256 lockTime;
         uint256 amount;
-        State state;
     }
 
     mapping(bytes32 => Lock) idTolocks;
@@ -25,7 +25,7 @@ contract HashedTimelockETH is IHashedTimelockETH {
     function initiateLock(bytes32 hashedSecret, address recipient, uint256 lockTime) external payable {
         bytes32 lockId = keccak256(abi.encodePacked(msg.sender, recipient, msg.value, lockTime, hashedSecret));
         require(idTolocks[lockId].state == State.INITIATED, "Lock already exists");
-        Lock memory newLock = Lock(hashedSecret, msg.sender, recipient, lockTime, msg.value, State.LOCKED);
+        Lock memory newLock = Lock(hashedSecret, State.LOCKED, msg.sender, recipient, lockTime, msg.value);
         idTolocks[lockId] = newLock;
         locks.push(newLock);
         emit LockInitiated(lockId, msg.sender, recipient, msg.value, lockTime, hashedSecret);
