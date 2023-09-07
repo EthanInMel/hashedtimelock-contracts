@@ -39,8 +39,7 @@ contract HashedTimelockETH is IHashedTimelockETH {
         require(lock.hashedSecret == keccak256(abi.encodePacked(secret)), "Wrong secret");
         require(lock.recipient == msg.sender, "Wrong recipient");
         payable(lock.recipient).transfer(lock.amount);
-        Lock storage lockS = idTolocks[lockId];
-        lockS.state = State.UNLOCKED;
+        idTolocks[lockId].state = State.UNLOCKED;
         emit LockClaimed(lockId);
     }
 
@@ -51,8 +50,7 @@ contract HashedTimelockETH is IHashedTimelockETH {
         require(lock.state == State.LOCKED, "Not refundable");
         require(lock.lockTime <= block.timestamp, "Time locked");
         payable(lock.sender).transfer(lock.amount);
-        Lock storage lockS = idTolocks[lockId];
-        lockS.state = State.REFUNDED;
+        idTolocks[lockId].state = State.REFUNDED;
         emit LockRefunded(lockId);
     }
 }
