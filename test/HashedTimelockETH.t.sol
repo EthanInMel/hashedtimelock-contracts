@@ -32,4 +32,10 @@ contract HashedTimelockETHTest is Test {
         bytes32 secret = "secret";
         hashedTimelock.claim(lockId, secret);
     }
+
+    function testFail_Refund() public {
+        bytes32 lockId = test_InitiateLock();
+
+        hashedTimelock.refund(lockId);
+    }
 }
