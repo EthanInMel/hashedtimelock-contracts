@@ -40,6 +40,7 @@ contract HashedTimelockETH is IHashedTimelockETH {
         require(lock.recipient == msg.sender, "Wrong recipient");
         payable(lock.recipient).transfer(lock.amount);
         idTolocks[lockId].state = State.UNLOCKED;
+        //Todo: update locks as well, but it is not neccessary since we will use indexer to get locks
         emit LockClaimed(lockId);
     }
 
@@ -51,6 +52,7 @@ contract HashedTimelockETH is IHashedTimelockETH {
         require(lock.lockTime <= block.timestamp, "Time locked");
         payable(lock.sender).transfer(lock.amount);
         idTolocks[lockId].state = State.REFUNDED;
+        //Todo: update locks as well
         emit LockRefunded(lockId);
     }
 }

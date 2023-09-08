@@ -1,66 +1,37 @@
-## Foundry
+## 哈希时间锁实现跨链交易的示例
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+前端代码见 https://github.com/EthanInMel/hashedtimelock-web
 
-Foundry consists of:
+## 环境准备
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+1. 安装Foundry
+https://book.getfoundry.sh/getting-started/installation
 
-## Documentation
+2. 根目录下运行 `forge install`
 
-https://book.getfoundry.sh/
 
-## Usage
+## 启动本地测试链
+1. 启动anvil 本地测试链A 终端中输入 `anvil `  输出的私钥会在部署时用到
 
-### Build
+2. 在另一个终端下启动anvil 本地测试链B `anvil --chain-id 31338 -p 8546`
 
-```shell
-$ forge build
-```
 
-### Test
+## 单元测试
+1. 根目录下运行 `forge test -vvv --gas-report`  输出带gas消耗报告
 
-```shell
-$ forge test
-```
+## 部署合约到测试链
+1. 创建 .env 文件 加入 PRIVATE_KEY=‘’ 从上面任意选一个地址部署
+2. 部署到测试链A `forge script script/Deploy.s.sol:DeployScript --fork-url http://localhost:8545 --broadcast --force `
 
-### Format
+3. 部署到测试链B `forge script script/Deploy.s.sol:DeployScript --fork-url http://localhost:8546 --broadcast --force`
 
-```shell
-$ forge fmt
-```
+部署后会输出合约地址，前端目前写死
 
-### Gas Snapshots
+## 设计逻辑
+Alice在A链上发起交易创建Lock，前端持续查询合约检测到该交易，Bob选择接受该交易，钱包申请切换到B链并在B链使用A的信息创建交易，A切换到B链，使用密钥Claim资产，B拿到密钥后切换到A链解锁A链上的资产完成交易。
 
-```shell
-$ forge snapshot
-```
 
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+## Todo
+- [部署合约信息输出到文件]
+- [更多测试用例]
+- [使用后台服务存储lock]
